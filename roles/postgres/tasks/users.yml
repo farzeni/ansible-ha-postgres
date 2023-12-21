@@ -1,0 +1,54 @@
+---
+# REPLICATION
+
+- name: Create a new replica database user
+  community.postgresql.postgresql_user:
+    name: "{{replicator_user}}"
+    password: "{{replicator_password}}"
+    role_attr_flags: REPLICATION,LOGIN
+  become: yes
+  become_user: postgres
+
+# BARMAN
+
+- name: Create a new barman database user
+  community.postgresql.postgresql_user:
+    name: "{{barman_user}}"
+    password: "{{barman_password}}"
+    role_attr_flags: SUPERUSER
+  become: yes
+  become_user: postgres
+
+- name: Create a new barman streamin database user
+  community.postgresql.postgresql_user:
+    name: "{{barman_streaming_user}}"
+    password: "{{barman_streaming_password}}"
+    role_attr_flags: SUPERUSER
+  become: yes
+  become_user: postgres
+
+# POOLER
+
+- name: Create a new pooler database user
+  community.postgresql.postgresql_user:
+    name: "{{pooler_user}}"
+    password: "{{pooler_password}}"
+    role_attr_flags: SUPERUSER
+  become: yes
+  become_user: postgres
+
+# APP
+
+- name: Create a new database user
+  community.postgresql.postgresql_user:
+    name: "{{db_user}}"
+    password: "{{db_password}}"
+  become: yes
+  become_user: postgres
+
+- name: Create a new database
+  community.postgresql.postgresql_db:
+    name: "{{db_name}}"
+    owner: "{{db_user}}"
+  become: yes
+  become_user: postgres

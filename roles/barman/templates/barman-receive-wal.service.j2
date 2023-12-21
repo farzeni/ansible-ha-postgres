@@ -1,0 +1,13 @@
+[Unit]
+Description=Barman Receive-WAL Service
+After=network.target postgresql.service
+
+[Service]
+Type=simple
+User={{ barman_user }}
+ExecStart=/usr/bin/barman receive-wal master
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target

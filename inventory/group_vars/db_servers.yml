@@ -1,0 +1,16 @@
+db_name: "app_db"
+db_user: "app_db_user"
+db_password: "app_db_password"
+
+replicator_user: replicator
+replicator_password: replicator
+
+pooler_user: pooler
+pooler_password: pooler
+
+barman_user: barman
+barman_password: barman
+barman_streaming_user: streaming_barman
+barman_streaming_password: streaming_barman
+
+primary_host: 192.168.56.101

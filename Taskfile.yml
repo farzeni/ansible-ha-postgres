@@ -1,0 +1,19 @@
+version: '3'
+
+tasks:
+  up:
+    cmds:
+      - vagrant up
+      - vagrant ssh-config 
+    desc: "Run the env playbook"
+
+  down:
+    cmds:
+      - vagrant destroy 
+    desc: "Destroy the env"
+
+  setup:
+    cmds:
+      - ansible-playbook playbooks/setup.yml
+    desc: "Run the setup playbook"
+

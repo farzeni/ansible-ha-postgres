@@ -1,0 +1,10 @@
+[master]
+description = "Server PostgreSQL Master"
+conninfo = host={{primary_host}} user={{barman_user}} dbname=postgres
+streaming_conninfo = host={{primary_host}} user={{barman_streaming_user}}
+backup_method = postgres
+slot_name = barman
+create_slot = auto
+streaming_archiver = true
+retention_policy = RECOVERY WINDOW OF 7 DAYS
+wal_retention_policy = main

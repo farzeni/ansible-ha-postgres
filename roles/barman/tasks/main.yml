@@ -1,0 +1,56 @@
+---
+- name: Install Barman
+  apt:
+    name: barman
+    state: present
+    update_cache: yes
+  become: true
+
+- name: Install postgres-client
+  apt:
+    name: postgresql-client
+    state: present
+    update_cache: yes
+  become: true
+
+- name: Copy base barman.conf
+  template:
+    src: barman.conf.j2
+    dest: /etc/barman.d/master.conf
+  become: true
+
+- name: Create .pgpass file
+  template:
+    src: pgpass.j2
+    dest: /var/lib/barman/.pgpass
+    owner: barman
+    group: barman
+    mode: 0600
+  become: true
+
+- name: Copy systemd service file
+  template:
+    src: barman-receive-wal.service.j2
+    dest: /etc/systemd/system/barman-receive-wal.service
+  become: true
+
+- name: Reload systemd
+  systemd:
+    daemon_reload: yes
+
+- name: Enable barman-receive-wal service
+  systemd:
+    name: barman-receive-wal.service
+    enabled: yes
+    state: started
+
+# - name: Setup Barman Cron Job
+#   ansible.builtin.cron:
+#     name: "Run Barman Cron"
+#     user: barman
+#     job: "/usr/bin/barman cron"
+#     minute: "*"
+#     hour: "*"
+#     day: "*"
+#     month: "*"
+#     weekday: "*"

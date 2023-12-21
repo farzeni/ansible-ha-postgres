@@ -1,0 +1,18 @@
+---
+- hosts: db_servers
+  name: Setup PostgreSQL Servers
+  become: true
+  roles:
+    - postgres
+
+- hosts: barman_servers
+  name: Setup PostgreSQL Servers
+  become: true
+  roles:
+    - barman
+
+- hosts: pgpool_servers
+  name: Setup HAProxy Server
+  become: true
+  roles:
+    - pgpool

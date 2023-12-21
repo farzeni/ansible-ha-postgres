@@ -1,0 +1,76 @@
+---
+- name: Install python3-psycopg2 using apt
+  ansible.builtin.apt:
+    name: python3-psycopg2
+    state: present
+    update_cache: yes
+  become: true
+
+- name: Install PostgreSQL
+  apt:
+    name: postgresql
+    state: present
+    update_cache: yes
+  become: true
+
+- name: pgpass for non interactive logins to the other node
+  blockinfile:
+    path: /var/lib/postgresql/.pgpass
+    create: yes
+    mode: 0600
+    owner: postgres
+    group: postgres
+    block: |
+      *:*:*:{{ replicator_user }}:{{ replicator_password }}
+
+- name: Copy postgresql.conf replicas
+  ansible.builtin.template:
+    src: postgresql.conf.replica.j2
+    dest: /etc/postgresql/14/main/postgresql.conf
+    owner: postgres
+    group: postgres
+    mode: 0644
+  become: yes
+  when: inventory_hostname in groups['db_servers_replica']
+
+- name: Copy pg_hba.conf replica
+  ansible.builtin.template:
+    src: pg_hba.conf.replica.j2
+    dest: /etc/postgresql/14/main/pg_hba.conf
+    owner: postgres
+    group: postgres
+    mode: 0644
+  become: yes
+  when: inventory_hostname in groups['db_servers_replica']
+
+- name: Stop replica databases
+  systemd:
+    state: stopped
+    name: postgresql
+  become: true
+
+- name: Remove data
+  file:
+    state: absent
+    path: "/var/lib/postgresql/14/main/"
+
+- name: Check if database is already initialized
+  stat:
+    path: '/var/lib/postgresql/14/main/PG_VERSION'
+  register: init_status
+
+- name: Initialize the slave database
+  shell: "pg_basebackup -D /var/lib/postgresql/14/main/ -h {{ primary_host }} -X stream -c fast -U {{ replicator_user }} -w -R"
+  become_user: postgres
+  when: init_status.stat.exists == False
+
+- name: Start replica databases
+  systemd:
+    state: started
+    name: postgresql
+  become: true
+
+- name: Wait for postgres to listen on port 5432
+  wait_for:
+    port: 5432
+    delay: 2

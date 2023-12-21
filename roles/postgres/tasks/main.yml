@@ -1,0 +1,13 @@
+---
+- name: Install and Configure postgres primary
+  include_tasks: install_primary.yml
+  when: inventory_hostname in groups['db_servers_primary']
+
+- name: Configure Users
+  include_tasks: users.yml
+  when: inventory_hostname in groups['db_servers_primary']
+
+- name: Install and Configure postgres replicas
+  include_tasks: install_replicas.yml
+  when: inventory_hostname in groups['db_servers_replica']
+

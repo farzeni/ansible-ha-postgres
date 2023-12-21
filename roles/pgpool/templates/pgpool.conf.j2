@@ -1,0 +1,57 @@
+# ----------------------------
+# pgpool-II configuration file
+# ----------------------------
+
+# - Connection Settings -
+
+listen_addresses = '*'
+port = 5432
+socket_dir = '/var/run/pgpool'
+pcp_listen_addresses = '*'
+pcp_port = 9898
+pcp_socket_dir = '/var/run/pgpool'
+
+# - Backend Connection Settings -
+
+backend_hostname0 = '192.168.56.101'  
+backend_port0 = 5432
+backend_weight0 = 1
+backend_data_directory0 = '/var/lib/postgresql/14/main'
+backend_flag0 = 'ALLOW_TO_FAILOVER'
+
+backend_hostname1 = '192.168.56.102' 
+backend_port1 = 5432
+backend_weight1 = 1
+backend_data_directory1 = '/var/lib/postgresql/14/main'
+backend_flag1 = 'ALLOW_TO_FAILOVER'
+
+# - Health Check Settings -
+
+health_check_period = 10
+health_check_timeout = 5
+health_check_user = {{ pooler_user }}
+health_check_password = {{ pooler_password }}
+health_check_max_retries = 0
+health_check_retry_delay = 1
+
+
+# - Load Balancing Settings -
+
+load_balance_mode = on
+
+# - Other Settings -
+
+replication_mode = off
+master_slave_mode = on
+master_slave_sub_mode = 'stream'
+sr_check_user = {{ pooler_user }}
+sr_check_password = {{ pooler_password }}
+delay_threshold = 10000000
+
+log_destination = 'stderr'
+log_line_prefix = '%t: pid %p: '
+log_connections = on
+log_hostname = off
+log_statement = on
+log_per_node_statement = off
+log_standby_delay = 'if_over_threshold'

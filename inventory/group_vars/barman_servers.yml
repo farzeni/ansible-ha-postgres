@@ -1,0 +1,6 @@
+primary_host: 192.168.56.101
+
+barman_user: barman
+barman_password: barman
+barman_streaming_user: streaming_barman
+barman_streaming_password: streaming_barman
